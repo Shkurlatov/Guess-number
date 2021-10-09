@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Security.Cryptography;
+using GameLibrary;
+using ConsoleLibrary;
 
 namespace NumberProject
 {
@@ -6,7 +8,15 @@ namespace NumberProject
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            int minAnswerValue = 0;
+            int maxAnswerValue = 100;
+
+            Game game = new Game(new UserConsole(minAnswerValue, maxAnswerValue));
+
+            do
+            {
+                game.Play(rightAnswer: RandomNumberGenerator.GetInt32(minAnswerValue, maxAnswerValue + 1));
+            } while (game.IsRestart());
         }
     }
 }
