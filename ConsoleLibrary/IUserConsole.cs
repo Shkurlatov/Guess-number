@@ -13,7 +13,5 @@ namespace ConsoleLibrary
         public void Congratulations(int attemptsToGuess);
 
         public bool IsGameRestart();
-
-        public int AcceptableInput(int minValue, int maxValue);
     }
 }

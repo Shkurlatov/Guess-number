@@ -12,7 +12,7 @@ namespace ConsoleLibrary
             MinNumberValue = minNumberValue;
             MaxNumberValue = maxNumberValue;
 
-            Console.WriteLine(String.Format("Hello! I thought a number from {0} to {1}. Try to guess.", MinNumberValue, MaxNumberValue));
+            Console.WriteLine(String.Format(Messages.GreetingsAndStart.GetDescription(), MinNumberValue, MaxNumberValue));
         }
 
         public int GetUserAnswer()
@@ -24,27 +24,27 @@ namespace ConsoleLibrary
         {
             if (isAnswerSmaller)
             {
-                Console.WriteLine("\nMy number is less. Please try again.");
+                Console.WriteLine(Messages.NumberIsLess.GetDescription());
             }
             else
             {
-                Console.WriteLine("\nMy number is more. Please try again.");
+                Console.WriteLine(Messages.NumberIsMore.GetDescription());
             }
         }
 
         public void Congratulations(int attemptsToGuess)
         {
-            Console.WriteLine(String.Format("\nCongratulations, you guessed the number on try #{0}.", attemptsToGuess));
+            Console.WriteLine(String.Format(Messages.Congratulations.GetDescription(), attemptsToGuess));
         }
 
         public bool IsGameRestart()
         {
-            Console.WriteLine("\nPlease enter 1 if you want to start a new game or 0 if you not.");
+            Console.WriteLine(Messages.RestartOrNot.GetDescription());
 
             if (AcceptableInput(0, 1) == 1)
             {
                 Console.Clear();
-                Console.WriteLine(String.Format("Well, I thought another number from {0} to {1}. Try to guess.", MinNumberValue, MaxNumberValue));
+                Console.WriteLine(String.Format(Messages.StartNewGame.GetDescription(), MinNumberValue, MaxNumberValue));
 
                 return true;
             }
@@ -52,13 +52,13 @@ namespace ConsoleLibrary
             return false;
         }
 
-        public int AcceptableInput(int minValue, int maxValue)
+        private int AcceptableInput(int minValue, int maxValue)
         {
             bool isAcceptableInput = int.TryParse(Console.ReadLine(), out int inputValue);
 
             while (!isAcceptableInput || inputValue < minValue || inputValue > maxValue)
             {
-                Console.WriteLine(String.Format("\nPlease enter an intager from {0} to {1}.", minValue, maxValue));
+                Console.WriteLine(String.Format(Messages.InputIsIncorrect.GetDescription(), minValue, maxValue));
 
                 isAcceptableInput = int.TryParse(Console.ReadLine(), out inputValue);
             }

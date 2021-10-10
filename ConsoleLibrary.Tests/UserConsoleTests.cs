@@ -3,20 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace ConsoleLibrary.Tests
 {
     public class UserConsoleTests
     {
-        private readonly UserConsole userConsole;
-
         private readonly int MinNumberValue = 0;
         private readonly int MaxNumberValue = 1;
-
-        public UserConsoleTests()
-        {
-            userConsole = new UserConsole(MinNumberValue, MaxNumberValue);
-        }
 
         [Theory]
         [MemberData(nameof(AcceptableInputTestsData))]
@@ -25,8 +19,14 @@ namespace ConsoleLibrary.Tests
             // arrange
             Console.SetIn(new StringReader(string.Join('\r', userInput)));
 
+            Type type = typeof(UserConsole);
+            var userConsole = Activator.CreateInstance(type, MinNumberValue, MaxNumberValue);
+            MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(x => x.Name == "AcceptableInput" && x.IsPrivate)
+            .First();
+
             // act
-            int acceptableInput = userConsole.AcceptableInput(MinNumberValue, MaxNumberValue);
+            int acceptableInput = (int)method.Invoke(userConsole, new object[] { MinNumberValue, MaxNumberValue });
 
             // assert
             Assert.Equal(acceptableInput, int.Parse(userInput.Last()));
