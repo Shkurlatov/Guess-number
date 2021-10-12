@@ -2,7 +2,7 @@
 
 namespace ConsoleLibrary
 {
-    public class UserConsole: IUserConsole
+    public class UserConsole
     {
         public int MinNumberValue { get; }
         public int MaxNumberValue { get; }

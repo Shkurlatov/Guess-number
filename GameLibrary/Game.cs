@@ -1,37 +1,39 @@
-﻿using ConsoleLibrary;
+﻿using System.Security.Cryptography;
 
 namespace GameLibrary
 {
     public class Game
     {
-        private readonly IUserConsole userConsole;
+        public int AttemptsToGuess { get; private set; }
+        public bool IsAnswerLess { get; private set; }
 
-        public Game(IUserConsole console)
+        private readonly int MinNumberValue;
+        private readonly int MaxNumberValue;
+        private int RightAnswer;
+
+        public Game(int minNumberValue, int maxNumberValue)
         {
-            userConsole = console;
+            MinNumberValue = minNumberValue;
+            MaxNumberValue = maxNumberValue;
         }
 
-        public void Play(int rightAnswer)
+        public void StartNew()
         {
-            int attemptsToGuess = 1;
+            RightAnswer = RandomNumberGenerator.GetInt32(MinNumberValue, MaxNumberValue + 1);
+            AttemptsToGuess = 1;
+        }
 
-            int userAnswer = userConsole.GetUserAnswer();
-
-            while (userAnswer != rightAnswer)
+        public bool IsAnswerRight(int userAnswer)
+        {
+            if (userAnswer != RightAnswer)
             {
-                userConsole.AskAnotherNumber(userAnswer > rightAnswer);
+                IsAnswerLess = userAnswer > RightAnswer;
+                AttemptsToGuess++;
 
-                attemptsToGuess++;
-
-                userAnswer = userConsole.GetUserAnswer();
+                return false;
             }
 
-            userConsole.Congratulations(attemptsToGuess);
-        }
-
-        public bool IsRestart()
-        {
-            return userConsole.IsGameRestart();
+            return true;
         }
     }
 }

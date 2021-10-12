@@ -1,39 +1,50 @@
-using Moq;
 using Xunit;
-using ConsoleLibrary;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 
 namespace GameLibrary.Tests
 {
     public class GameTests
     {
-        [Theory]
-        [MemberData(nameof(PlayTestsData))]
-        public void Play_GetUserAnswers_LastAnswerIsRight(int[] userAnswers)
+        private readonly Game game;
+        private readonly int minNumberValue = 0;
+        private readonly int maxNumberValue = 1;
+
+        public GameTests()
         {
-            // arrange
-            var userConsole = new Mock<IUserConsole>();
-            int index = 0;
-            userConsole.Setup(x => x.GetUserAnswer())
-                .Returns(() => userAnswers[index])
-                .Callback(() => index++);
-
-            // act
-            var game = new Game(userConsole.Object);
-            game.Play(userAnswers.Last());
-
-            // assert
-            userConsole.Verify(x => x.GetUserAnswer(), Times.Exactly(userAnswers.Length));
-            userConsole.Verify(x => x.AskAnotherNumber(It.IsAny<bool>()), Times.Exactly(userAnswers.Length - 1));
-            userConsole.Verify(x => x.Congratulations(userAnswers.Length), Times.Exactly(1));
+            game = new Game(minNumberValue, maxNumberValue);
         }
 
-        public static IEnumerable<object[]> PlayTestsData()
+        [Theory]
+        [MemberData(nameof(IsAnswerRightTestsData))]
+        public void IsAnswerRight_GetsUserAnswers_ReturnsCorrectBooleans(bool expectedReturn, int rightAnswer, int userAnswer, bool isAnswerLess)
         {
-            yield return new object[] { new int[] { 1 } };
-            yield return new object[] { new int[] { 1, 0 } };
-            yield return new object[] { new int[] { -100, 500, 200, 300, 115, 8 } };
+            // arrange
+            FieldInfo RightAnswer = typeof(Game).GetField("RightAnswer", BindingFlags.NonPublic | BindingFlags.Instance);
+            RightAnswer.SetValue(game, rightAnswer);
+            int attemptsToGuess = game.AttemptsToGuess;
+
+            // act
+            bool isAnswerRight = game.IsAnswerRight(userAnswer);
+
+            // assert
+            Assert.Equal(expectedReturn, isAnswerRight);
+            if (isAnswerRight)
+            {
+                Assert.Equal(game.AttemptsToGuess, attemptsToGuess);
+            }
+            else
+            {
+                Assert.Equal(isAnswerLess, game.IsAnswerLess);
+                Assert.Equal(game.AttemptsToGuess, attemptsToGuess + 1);
+            }
+        }
+
+        public static IEnumerable<object[]> IsAnswerRightTestsData()
+        {
+            yield return new object[] { true, 1, 1, default };
+            yield return new object[] { false, 1, 0, false };
+            yield return new object[] { false, 0, 1, true };
         }
     }
 }
