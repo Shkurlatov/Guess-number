@@ -5,11 +5,10 @@ namespace GameLibrary
     public class Game
     {
         public int AttemptsToGuess { get; private set; }
-        public bool IsAnswerLess { get; private set; }
 
         private readonly int MinNumberValue;
         private readonly int MaxNumberValue;
-        private int RightAnswer;
+        private int Answer;
 
         public Game(int minNumberValue, int maxNumberValue)
         {
@@ -19,21 +18,32 @@ namespace GameLibrary
 
         public void StartNew()
         {
-            RightAnswer = RandomNumberGenerator.GetInt32(MinNumberValue, MaxNumberValue + 1);
+            Answer = RandomNumberGenerator.GetInt32(MinNumberValue, MaxNumberValue + 1);
             AttemptsToGuess = 1;
         }
 
-        public bool IsAnswerRight(int userAnswer)
+        public AnswerIs CompareWithAnswer(int userNumber)
         {
-            if (userAnswer != RightAnswer)
+            if (userNumber != Answer)
             {
-                IsAnswerLess = userAnswer > RightAnswer;
                 AttemptsToGuess++;
 
-                return false;
+                if (userNumber > Answer)
+                {
+                    return AnswerIs.Less;
+                }
+
+                return AnswerIs.More;
             }
 
-            return true;
+            return AnswerIs.Equally;
         }
+    }
+
+    public enum AnswerIs
+    {
+        Equally,
+        Less,
+        More
     }
 }

@@ -7,11 +7,9 @@ namespace NumberProject
     {
         static void Main(string[] args)
         {
-            int minNumberValue = 0;
-            int maxNumberValue = 100;
-
-            UserConsole userConsole = new UserConsole(minNumberValue, maxNumberValue);
-            Game game = new Game(minNumberValue, maxNumberValue);
+            Configuration configuration = new Configuration();
+            UserConsole userConsole = new UserConsole(configuration.MinNumberValue, configuration.MaxNumberValue);
+            Game game = new Game(configuration.MinNumberValue, configuration.MaxNumberValue);
 
             do
             {
@@ -22,9 +20,13 @@ namespace NumberProject
             {
                 game.StartNew();
 
-                while (!game.IsAnswerRight(userConsole.GetUserAnswer()))
+                AnswerIs resultOfCompare = game.CompareWithAnswer(userConsole.GetUserAnswer());
+
+                while (resultOfCompare != AnswerIs.Equally)
                 {
-                    userConsole.AskAnotherNumber(game.IsAnswerLess);
+                    userConsole.AskAnotherNumber(resultOfCompare == AnswerIs.Less);
+
+                    resultOfCompare = game.CompareWithAnswer(userConsole.GetUserAnswer());
                 }
 
                 userConsole.Congratulations(game.AttemptsToGuess);

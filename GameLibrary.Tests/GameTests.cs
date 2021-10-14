@@ -16,35 +16,34 @@ namespace GameLibrary.Tests
         }
 
         [Theory]
-        [MemberData(nameof(IsAnswerRightTestsData))]
-        public void IsAnswerRight_GetsUserAnswers_ReturnsCorrectBooleans(bool expectedReturn, int rightAnswer, int userAnswer, bool isAnswerLess)
+        [MemberData(nameof(CompareWithAnswerTestsData))]
+        public void CompareWithAnswer_VariousUserAnswers_ReturnsCorrectEnum(AnswerIs expected, int rightAnswer, int userAnswer)
         {
             // arrange
-            FieldInfo RightAnswer = typeof(Game).GetField("RightAnswer", BindingFlags.NonPublic | BindingFlags.Instance);
-            RightAnswer.SetValue(game, rightAnswer);
+            FieldInfo Answer = typeof(Game).GetField("Answer", BindingFlags.NonPublic | BindingFlags.Instance);
+            Answer.SetValue(game, rightAnswer);
             int attemptsToGuess = game.AttemptsToGuess;
 
             // act
-            bool isAnswerRight = game.IsAnswerRight(userAnswer);
+            AnswerIs resultOfCompare = game.CompareWithAnswer(userAnswer);
 
             // assert
-            Assert.Equal(expectedReturn, isAnswerRight);
-            if (isAnswerRight)
+            Assert.Equal(expected, resultOfCompare);
+            if (expected == AnswerIs.Equally)
             {
                 Assert.Equal(game.AttemptsToGuess, attemptsToGuess);
             }
             else
             {
-                Assert.Equal(isAnswerLess, game.IsAnswerLess);
                 Assert.Equal(game.AttemptsToGuess, attemptsToGuess + 1);
             }
         }
 
-        public static IEnumerable<object[]> IsAnswerRightTestsData()
+        public static IEnumerable<object[]> CompareWithAnswerTestsData()
         {
-            yield return new object[] { true, 1, 1, default };
-            yield return new object[] { false, 1, 0, false };
-            yield return new object[] { false, 0, 1, true };
+            yield return new object[] { AnswerIs.Equally, 1, 1 };
+            yield return new object[] { AnswerIs.More, 1, 0 };
+            yield return new object[] { AnswerIs.Less, 0, 1 };
         }
     }
 }
