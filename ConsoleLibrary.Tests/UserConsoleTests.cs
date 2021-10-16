@@ -9,8 +9,8 @@ namespace ConsoleLibrary.Tests
 {
     public class UserConsoleTests
     {
-        private readonly int MinNumberValue = 0;
-        private readonly int MaxNumberValue = 1;
+        private readonly int _minNumberValue = 0;
+        private readonly int _maxNumberValue = 1;
 
         [Theory]
         [MemberData(nameof(AcceptableInputTestsData))]
@@ -20,13 +20,13 @@ namespace ConsoleLibrary.Tests
             Console.SetIn(new StringReader(string.Join('\r', userInput)));
 
             Type type = typeof(UserConsole);
-            var userConsole = Activator.CreateInstance(type, MinNumberValue, MaxNumberValue);
+            var userConsole = Activator.CreateInstance(type, _minNumberValue, _maxNumberValue, false);
             MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
             .Where(x => x.Name == "AcceptableInput" && x.IsPrivate)
             .First();
 
             // act
-            int acceptableInput = (int)method.Invoke(userConsole, new object[] { MinNumberValue, MaxNumberValue });
+            int acceptableInput = (int)method.Invoke(userConsole, new object[] { _minNumberValue, _maxNumberValue });
 
             // assert
             Assert.Equal(acceptableInput, int.Parse(userInput.Last()));

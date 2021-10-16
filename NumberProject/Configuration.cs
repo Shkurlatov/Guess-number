@@ -1,35 +1,29 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.IO;
-using System;
 
 namespace NumberProject
 {
     public class Configuration
     {
-        public int MinNumberValue;
-        public int MaxNumberValue;
+        public bool IsDefault { get; private set; }
+        public int MinNumberValue { get; private set; }
+        public int MaxNumberValue { get; private set; }
 
         public Configuration()
         {
-            string appsettingsPath = Path.GetFullPath(@"..\..\..\") + "appsettings.json";
-
-            if (File.Exists(appsettingsPath))
+            try
             {
-                try
-                {
-                    IConfiguration config = new ConfigurationBuilder().AddJsonFile(appsettingsPath).Build();
+                string appsettingsPath = Path.GetFullPath(@"..\..\..\") + "appsettings.json";
+                IConfiguration config = new ConfigurationBuilder().AddJsonFile(appsettingsPath).Build();
 
-                    MinNumberValue = int.Parse(config.GetSection("MinNumberValue").Value);
-                    MaxNumberValue = int.Parse(config.GetSection("MaxNumberValue").Value);
-                }
-                catch (Exception exception)
-                {
-                    throw new Exception(exception.Message);
-                }
+                MinNumberValue = int.Parse(config.GetSection("MinNumberValue").Value);
+                MaxNumberValue = int.Parse(config.GetSection("MaxNumberValue").Value);
             }
-            else
+            catch
             {
-                throw new FileNotFoundException("The configuration file does't exist.");
+                IsDefault = true;
+                MinNumberValue = 0;
+                MaxNumberValue = 1;
             }
         }
     }

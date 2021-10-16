@@ -1,5 +1,6 @@
 ﻿using GameLibrary;
 using ConsoleLibrary;
+using System;
 
 namespace NumberProject
 {
@@ -8,7 +9,7 @@ namespace NumberProject
         static void Main(string[] args)
         {
             Configuration configuration = new Configuration();
-            UserConsole userConsole = new UserConsole(configuration.MinNumberValue, configuration.MaxNumberValue);
+            UserConsole userConsole = new UserConsole(configuration.MinNumberValue, configuration.MaxNumberValue, configuration.IsDefault);
             Game game = new Game(configuration.MinNumberValue, configuration.MaxNumberValue);
 
             do
@@ -20,16 +21,28 @@ namespace NumberProject
             {
                 game.StartNew();
 
-                AnswerIs resultOfCompare = game.CompareWithAnswer(userConsole.GetUserAnswer());
+                CompareResult compare = game.CompareWithAnswer(userConsole.GetUserAnswer());
 
-                while (resultOfCompare != AnswerIs.Equally)
+                while (compare != CompareResult.AnswerIsEqually)
                 {
-                    userConsole.AskAnotherNumber(resultOfCompare == AnswerIs.Less);
+                    userConsole.AskAnotherNumber(ConvertCompareToMessage(compare));
 
-                    resultOfCompare = game.CompareWithAnswer(userConsole.GetUserAnswer());
+                    compare = game.CompareWithAnswer(userConsole.GetUserAnswer());
                 }
 
                 userConsole.Congratulations(game.AttemptsToGuess);
+            }
+
+            Messages ConvertCompareToMessage(CompareResult compare)
+            {
+                try
+                {
+                    return (Messages)Enum.Parse(typeof(Messages), compare.ToString(), true);
+                }
+                catch
+                {
+                    return Messages.MessageLost;
+                }
             }
         }
     }

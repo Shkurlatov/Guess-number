@@ -6,44 +6,53 @@ namespace GameLibrary
     {
         public int AttemptsToGuess { get; private set; }
 
-        private readonly int MinNumberValue;
-        private readonly int MaxNumberValue;
-        private int Answer;
+        private readonly int _minNumberValue;
+        private readonly int _maxNumberValue;
+        private int _answer;
 
         public Game(int minNumberValue, int maxNumberValue)
         {
-            MinNumberValue = minNumberValue;
-            MaxNumberValue = maxNumberValue;
+            _minNumberValue = minNumberValue;
+            _maxNumberValue = maxNumberValue;
         }
 
         public void StartNew()
         {
-            Answer = RandomNumberGenerator.GetInt32(MinNumberValue, MaxNumberValue + 1);
+            _answer = RandomNumberGenerator.GetInt32(_minNumberValue, _maxNumberValue + 1);
             AttemptsToGuess = 1;
         }
 
-        public AnswerIs CompareWithAnswer(int userNumber)
+        public CompareResult CompareWithAnswer(int userNumber)
         {
-            if (userNumber != Answer)
+            int difference = _answer - userNumber;
+
+            if (difference != 0)
             {
                 AttemptsToGuess++;
 
-                if (userNumber > Answer)
+                if (difference < 0)
                 {
-                    return AnswerIs.Less;
-                }
+                    if (difference < -100)
+                    {
 
-                return AnswerIs.More;
+                        return CompareResult.AnswerIsMuchLower;
+                    }
+
+                    return CompareResult.AnswerIsLess;
+                }
+                else
+                {
+                    if (difference > 100)
+                    {
+
+                        return CompareResult.AnswerIsMuchHigher;
+                    }
+
+                    return CompareResult.AnswerIsMore;
+                }
             }
 
-            return AnswerIs.Equally;
+            return CompareResult.AnswerIsEqually;
         }
-    }
-
-    public enum AnswerIs
-    {
-        Equally,
-        Less,
-        More
     }
 }

@@ -6,44 +6,46 @@ namespace GameLibrary.Tests
 {
     public class GameTests
     {
-        private readonly Game game;
-        private readonly int minNumberValue = 0;
-        private readonly int maxNumberValue = 1;
+        private readonly Game _sut;
+        private readonly int _minNumberValue = 0;
+        private readonly int _maxNumberValue = 101;
 
         public GameTests()
         {
-            game = new Game(minNumberValue, maxNumberValue);
+            _sut = new Game(_minNumberValue, _maxNumberValue);
         }
 
         [Theory]
         [MemberData(nameof(CompareWithAnswerTestsData))]
-        public void CompareWithAnswer_VariousUserAnswers_ReturnsCorrectEnum(AnswerIs expected, int rightAnswer, int userAnswer)
+        public void CompareWithAnswer_VariousUserAnswers_ReturnsCorrectEnum(CompareResult expected, int rightAnswer, int userAnswer)
         {
             // arrange
-            FieldInfo Answer = typeof(Game).GetField("Answer", BindingFlags.NonPublic | BindingFlags.Instance);
-            Answer.SetValue(game, rightAnswer);
-            int attemptsToGuess = game.AttemptsToGuess;
+            FieldInfo answer = typeof(Game).GetField("_answer", BindingFlags.NonPublic | BindingFlags.Instance);
+            answer.SetValue(_sut, rightAnswer);
+            int attemptsToGuess = _sut.AttemptsToGuess;
 
             // act
-            AnswerIs resultOfCompare = game.CompareWithAnswer(userAnswer);
+            CompareResult resultOfCompare = _sut.CompareWithAnswer(userAnswer);
 
             // assert
             Assert.Equal(expected, resultOfCompare);
-            if (expected == AnswerIs.Equally)
+            if (expected == CompareResult.AnswerIsEqually)
             {
-                Assert.Equal(game.AttemptsToGuess, attemptsToGuess);
+                Assert.Equal(_sut.AttemptsToGuess, attemptsToGuess);
             }
             else
             {
-                Assert.Equal(game.AttemptsToGuess, attemptsToGuess + 1);
+                Assert.Equal(_sut.AttemptsToGuess, attemptsToGuess + 1);
             }
         }
 
         public static IEnumerable<object[]> CompareWithAnswerTestsData()
         {
-            yield return new object[] { AnswerIs.Equally, 1, 1 };
-            yield return new object[] { AnswerIs.More, 1, 0 };
-            yield return new object[] { AnswerIs.Less, 0, 1 };
+            yield return new object[] { CompareResult.AnswerIsEqually, 0, 0 };
+            yield return new object[] { CompareResult.AnswerIsMore, 1, 0 };
+            yield return new object[] { CompareResult.AnswerIsLess, 1, 2 };
+            yield return new object[] { CompareResult.AnswerIsMuchHigher, 101, 0 };
+            yield return new object[] { CompareResult.AnswerIsMuchLower, 0, 101 };
         }
     }
 }

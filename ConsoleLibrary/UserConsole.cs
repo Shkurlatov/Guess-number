@@ -4,32 +4,30 @@ namespace ConsoleLibrary
 {
     public class UserConsole
     {
-        public int MinNumberValue { get; }
-        public int MaxNumberValue { get; }
+        private readonly int _minNumberValue;
+        private readonly int _maxNumberValue;
 
-        public UserConsole(int minNumberValue, int maxNumberValue)
+        public UserConsole(int minNumberValue, int maxNumberValue, bool isDefault)
         {
-            MinNumberValue = minNumberValue;
-            MaxNumberValue = maxNumberValue;
+            _minNumberValue = minNumberValue;
+            _maxNumberValue = maxNumberValue;
 
-            Console.WriteLine(String.Format(Messages.GreetingsAndStart.GetDescription(), MinNumberValue, MaxNumberValue));
+            if (isDefault)
+            {
+                Console.WriteLine(Messages.SettingsLost.GetDescription());
+            }
+
+            Console.WriteLine(String.Format(Messages.GreetingsAndStart.GetDescription(), _minNumberValue, _maxNumberValue));
         }
 
         public int GetUserAnswer()
         {
-            return AcceptableInput(MinNumberValue, MaxNumberValue);
+            return AcceptableInput(_minNumberValue, _maxNumberValue);
         }
 
-        public void AskAnotherNumber(bool isAnswerSmaller)
+        public void AskAnotherNumber(Messages message)
         {
-            if (isAnswerSmaller)
-            {
-                Console.WriteLine(Messages.NumberIsLess.GetDescription());
-            }
-            else
-            {
-                Console.WriteLine(Messages.NumberIsMore.GetDescription());
-            }
+            Console.WriteLine(message.GetDescription());
         }
 
         public void Congratulations(int attemptsToGuess)
@@ -44,7 +42,7 @@ namespace ConsoleLibrary
             if (AcceptableInput(0, 1) == 1)
             {
                 Console.Clear();
-                Console.WriteLine(String.Format(Messages.StartNewGame.GetDescription(), MinNumberValue, MaxNumberValue));
+                Console.WriteLine(String.Format(Messages.StartNewGame.GetDescription(), _minNumberValue, _maxNumberValue));
 
                 return true;
             }

@@ -8,10 +8,6 @@ namespace ConsoleLibrary
     {
         [Description("Hello! I thought a number from {0} to {1}. Try to guess.")]
         GreetingsAndStart,
-        [Description("\nMy number is less. Please try again.")]
-        NumberIsLess,
-        [Description("\nMy number is more. Please try again.")]
-        NumberIsMore,
         [Description("\nCongratulations, you guessed the number on try #{0}.")]
         Congratulations,
         [Description("\nPlease enter 1 if you want to start a new game or 0 if you not.")]
@@ -20,6 +16,22 @@ namespace ConsoleLibrary
         StartNewGame,
         [Description("\nPlease enter an intager from {0} to {1}.")]
         InputIsIncorrect,
+        [Description("\nLess Test!")]
+        Less,
+
+        [Description("\nMy number is less. Please try again.")]
+        AnswerIsLess,
+        [Description("\nMy number is more. Please try again.")]
+        AnswerIsMore,
+        [Description("\nMy number is much lower. Please try again.")]
+        AnswerIsMuchLower,
+        [Description("\nMy number is much higher. Please try again.")]
+        AnswerIsMuchHigher,
+
+        [Description("Warning: the settings file was lost or damaged!\nThe game will continue with default settings.\n")]
+        SettingsLost,
+        [Description("\nWarning: the message to user was lost!")]
+        MessageLost,
     }
 
     static class ExtensionClass
@@ -33,10 +45,8 @@ namespace ConsoleLibrary
                 FieldInfo fieldInfo = eType.GetField(eName);
                 if (fieldInfo != null)
                 {
-                    DescriptionAttribute descriptionAttribute =
-                           Attribute.GetCustomAttribute(fieldInfo,
-                             typeof(DescriptionAttribute)) as DescriptionAttribute;
-                    if (descriptionAttribute != null)
+                    if (Attribute.GetCustomAttribute(fieldInfo,
+                             typeof(DescriptionAttribute)) is DescriptionAttribute descriptionAttribute)
                     {
                         return descriptionAttribute.Description;
                     }
